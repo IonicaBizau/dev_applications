@@ -22,3 +22,8 @@ exports.stop = function(link) {
 exports.edit = function(link) {
 
 }
+
+// Delete app function
+exports.delete = function(link) {
+
+}
