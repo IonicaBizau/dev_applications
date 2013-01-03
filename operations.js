@@ -27,3 +27,10 @@ exports.edit = function(link) {
 exports.delete = function(link) {
 
 }
+
+// Get apps names function
+exports.applications = function(link) {
+    apps.getApplications(function(apps){
+        send.ok(link.res, apps);
+    });
+}
