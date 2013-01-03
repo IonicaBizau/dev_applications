@@ -5,6 +5,7 @@ define([
 
     function init(config) {
         self = this;
+        $("#appsTable").append("<h1>Testing...</h1>");
         getAppsNames(function(data) {
             buildTable(data);
         });
