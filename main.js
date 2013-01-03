@@ -1,13 +1,13 @@
-define(function() {
+define([
+    "/jquery.js"
+    ], function() {
     var self;
 
     function init(config) {
         self = this;
-        alert("Page loaded.");
-        $("#appsTable").html("<h1>This is a test heading.</h1>");
-        /*getAppsNames(function(data) {
+        getAppsNames(function(data) {
             buildTable(data);
-        });*/
+        });
     }
 
     return init;
@@ -44,7 +44,6 @@ function buildTable(apps) {
         var row = $("<tr>");
 
         var col1 = $("<td>");
-        alert("APP NAME: " + apps[i].name);
         col1.html(apps[i].name);
         
         var col2 = $("<td>");
