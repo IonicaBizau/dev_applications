@@ -4,9 +4,10 @@ define(function() {
     function init(config) {
         self = this;
         alert("Page loaded.");
-        getAppsNames(function(data) {
+        $("#appsTable").html("<h1>This is a test heading.</h1>");
+        /*getAppsNames(function(data) {
             buildTable(data);
-        });
+        });*/
     }
 
     return init;
@@ -23,9 +24,9 @@ function buildTable(apps) {
     var appsTable = $("#appsTable");
     
     var buttons = "<button class='btn btn-primary'><i class='icon-upload icon-white'></i> Redeploy</button>" +
-                   "<button class='btn btn-success'><i class='icon-play icon-white'></i> Start</button>" +
-                   "<button class='btn btn-warning'><i class='icon-edit icon-white'></i> Edit</button>" +
-                   "<button class='btn btn-danger'><i class='icon-trash icon-white'></i> Delete</button>"
+                  "<button class='btn btn-success'><i class='icon-play icon-white'></i> Start</button>" +
+                  "<button class='btn btn-warning'><i class='icon-edit icon-white'></i> Edit</button>" +
+                  "<button class='btn btn-danger'><i class='icon-trash icon-white'></i> Delete</button>"
     
     var htmlTable = "<table class='table table-bordered'>" +
                         "<thead>" +
