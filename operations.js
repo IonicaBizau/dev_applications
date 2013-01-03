@@ -30,7 +30,8 @@ exports.delete = function(link) {
 
 // Get apps names function
 exports.applications = function(link) {
-    apps.getApplications(function(apps){
+    apps.getApplications(function(err, apps){
+        if(err) return send.internalservererror(link, err);
         send.ok(link.res, apps);
     });
 }
