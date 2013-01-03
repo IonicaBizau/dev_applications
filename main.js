@@ -78,7 +78,7 @@ function buildTable(apps) {
         col2.append(deleteButton);
         
         row.append(col1);
-        row.append(col1);
+        row.append(col2);
         
         tbody.append(row);
     }
