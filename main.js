@@ -15,7 +15,7 @@ define([
 
 
 function getAppsNames(callback) {
-    $.get("@/dev_applications/applications", function(data) {
+    self.link("applications", function(data) {
         callback(data);
     });
 }
