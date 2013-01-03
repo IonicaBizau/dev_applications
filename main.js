@@ -28,23 +28,28 @@ function buildTable(apps) {
                   "<button class='btn btn-warning'><i class='icon-edit icon-white'></i> Edit</button>" +
                   "<button class='btn btn-danger'><i class='icon-trash icon-white'></i> Delete</button>"
     
-    var htmlTable = "<table class='table table-bordered'>" +
-                        "<thead>" +
-                            "<tr>" +
-                                "<th style='width:60%'>Application Name</th>" +
-                                "<th>Operations</th>" +
-                            "</tr>" +
-                        "</thead>" +
-                        
-                        "<tbody>"
+    var htmlTable = $("<table class='table table-bordered'>");
+    var thead = $("<thead>");
+    var tr = $("<tr>");
 
-    appsTable.append(htmlTable);
+    var th1 = $("<th style='width:60%'>");
+    th1.html("Application Name");
+
+    var th2 = $("<th>");
+    th2.html("Operations");
+    
+    tr.append(th1);
+    tr.append(th2);
+    
+    thead.append(tr);
+
+    var tbody = $("<tbody>");
     
     for(var i in apps) {
         var row = $("<tr>");
 
         var col1 = $("<td>");
-        col1.html(apps[i].name);
+        col1.html(i + ". " + apps[i].name);
         
         var col2 = $("<td>");
         col2.html(buttons);
@@ -52,9 +57,9 @@ function buildTable(apps) {
         row.append(col1);
         row.append(col1);
         
-        appsTable.append(row);
-        if(i === apps.length - 1){
-            appsTable.append("</tbody></table>");        
-        }
+        tbody.append(row);
     }
+    
+    htmlTable.append(tbody);
+    appsTable.append(htmlTable);
 }
