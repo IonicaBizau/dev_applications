@@ -24,11 +24,11 @@ exports.edit = function(link) {
 }
 
 // Delete app function
-exports.delete = function(link, callback) {
+exports.delete = function(link) {
     var id = link.data;
     apps.uninstall(CONFIG.APPLICATION_ROOT + id + "/mono.json", function(err) {
-        if(err) return callback(err);
-        callback();
+        if(err) return send.internalservererror(link, err);
+        send.ok(link.res)
     });
 }
 
