@@ -30,7 +30,7 @@ define([
         $("#yesButton").on("click", function() {
             self.link("delete", { data : appId }, function(err, data) {
                 $("#modal").fadeOut(FADE_TIME);
-                //if(err) return showError(err);
+                if(err) return showError(err);
                 $("#" + appId).fadeOut(FADE_TIME);
             });
         });
