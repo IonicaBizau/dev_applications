@@ -4,6 +4,7 @@ define(function() {
     function init(config) {
         self = this;
         getAppsNames(function(data) {
+            
             buildTable(data);
         });
     }
@@ -42,7 +43,7 @@ function buildTable(apps) {
         var row = $("<tr>");
 
         var col1 = $("<td>");
-        col1.html(apps[i]);
+        col1.html(apps[i].name);
         
         var col2 = $("<td>");
         col2.html(buttons);
