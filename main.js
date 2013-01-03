@@ -49,9 +49,12 @@ function buildTable(apps) {
         var col2 = $("<td>");
         col2.html(buttons);
         
-        row.html(col1 + col2)
+        row.append(col1);
+        row.append(col1);
         
         appsTable.append(row);
+        if(i === apps.length - 1){
+            appsTable.append("</tbody></table>");        
+        }
     }
-    appsTable.append("</tbody></table>");
 }
