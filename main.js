@@ -5,6 +5,7 @@ define([
 
     function init(config) {
         self = this;
+        debugger;
         self.link("applications", function(data) {
             buildTable(data);
         });
