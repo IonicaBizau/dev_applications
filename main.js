@@ -43,6 +43,7 @@ function buildTable(apps) {
         var row = $("<tr>");
 
         var col1 = $("<td>");
+        console.log("APP NAME: " + apps[i].name);
         col1.html(apps[i].name);
         
         var col2 = $("<td>");
