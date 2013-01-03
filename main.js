@@ -5,7 +5,6 @@ define([
 
     function init(config) {
         self = this;
-        $("#appsTable").append("<h1>Testing...</h1>");
         getAppsNames(function(data) {
             buildTable(data);
         });
@@ -24,11 +23,31 @@ function getAppsNames(callback) {
 function buildTable(apps) {
     var appsTable = $("#appsTable");
     
-    var buttons = "<button class='btn btn-primary'><i class='icon-upload icon-white'></i> Redeploy</button>" +
-                  "<button class='btn btn-success'><i class='icon-play icon-white'></i> Start</button>" +
-                  "<button class='btn btn-warning'><i class='icon-edit icon-white'></i> Edit</button>" +
-                  "<button class='btn btn-danger'><i class='icon-trash icon-white'></i> Delete</button>"
+    // Redeploy button
+    var redeployButton = $("<button class='btn btn-primary'>");
+    var redeployIcon = $("<i class='icon-upload icon-white'></i>");
+    redeployButton.append(redeployIcon);
+    redeployButton.append(" Redeploy"); 
+       
+    // Start button
+    var startButton = $("<button class='btn btn-success'>");
+    var startIcon = $("<i class='icon-play icon-white'></i>");
+    startButton.append(startIcon);
+    startButton.append(" Start"); 
     
+    // Edit button
+    var editButton = $("<button class='btn btn-warning'>");
+    var editIcon = $("<i class='icon-edit icon-white'></i>");
+    editButton.append(editIcon);
+    editButton.append(" Edit"); 
+    
+    // Delete button
+    var deleteButton = $("<button class='btn btn-danger'>");
+    var deleteIcon = $("<i class='icon-trash icon-white'></i>");
+    deleteButton.append(deleteIcon);
+    deleteButton.append(" Delete"); 
+    
+    // HTML Table
     var htmlTable = $("<table class='table table-bordered'>");
     var thead = $("<thead>");
     var tr = $("<tr>");
@@ -53,7 +72,10 @@ function buildTable(apps) {
         col1.html(i + ". " + apps[i].name);
         
         var col2 = $("<td>");
-        col2.html(buttons);
+        col2.append(redeployButton);
+        col2.append(startButton);
+        col2.append(editButton);
+        col2.append(deleteButton);
         
         row.append(col1);
         row.append(col1);
