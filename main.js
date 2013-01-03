@@ -5,20 +5,12 @@ define([
 
     function init(config) {
         self = this;
-        getAppsNames(function(data) {
+        self.link("applications", function(data) {
             buildTable(data);
         });
     }
-
     return init;
 });
-
-
-function getAppsNames(callback) {
-    self.link("applications", function(data) {
-        callback(data);
-    });
-}
 
 function buildTable(apps) {
     var appsTable = $("#appsTable");
