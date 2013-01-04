@@ -1,4 +1,5 @@
 define([
+    "/jquery.js",
     "/bootstrap/js/bootstrap.js"
     ], function() {
     var self;
@@ -34,6 +35,7 @@ define([
         });
     }
     
+    // Build table with apps names
     function buildTable(apps) {   
         var template = $(".template");
         var tbody = $("#appsTable").find("tbody");
