@@ -1,9 +1,9 @@
 define([
-    "/jquery.js"
+    "/bootstrap/js/bootstrap.js"
     ], function() {
     var self;
     
-    var FADE_TIME = 600;
+    var FADE_TIME = 500;
     
     function init(config) {
         self = this;
@@ -21,15 +21,13 @@ define([
                 confirmAction(operation);
             }
         });
-        
-        // Modal buttons
-        $("#noButton, .close").on("click", function() {
-            $("#modal").fadeOut(FADE_TIME);
-        });
-        
+
         $("#yesButton").on("click", function() {
+            $("#"+appId).find(".spinner").show();
+            $("#"+appId).find(".operations").hide();
+            $("#modal").modal("hide");
+
             self.link("delete", { data : appId }, function(err, data) {
-                $("#modal").fadeOut(FADE_TIME);
                 if(err) return showError(err);
                 $("#" + appId).fadeOut(FADE_TIME);
             });
@@ -57,7 +55,7 @@ define([
         switch(operation){
             case "delete":
                 $("#question").html("Are you really <b>sure</b> that you want to delete this application?");
-                $('#modal').fadeIn(FADE_TIME);
+                $("#modal").modal('show');
             break;
         }
     }
