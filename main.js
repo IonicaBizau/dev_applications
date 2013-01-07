@@ -30,13 +30,7 @@ define([
                 case "delete":
                     $("#"+appId).find(".spinner").show();
                     $("#"+appId).find(".operations").hide();
-                    $("#modal").modal("hide");
-
-                    window.setTimeout(function(){
-                        $("#" + appId).fadeOut(FADE_TIME);
-                    }, 3000);
-                    return;
-                    
+                    $("#modal").modal("hide");                    
                     self.link("delete", { data : appId }, function(err, data) {
                         if(err) return showError(err);
                         $("#" + appId).fadeOut(FADE_TIME);
