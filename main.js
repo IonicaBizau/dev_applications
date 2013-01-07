@@ -56,10 +56,13 @@ define([
         var tbody = $("#appsTable").find("tbody");
         for(var i in apps) {
             var app = apps[i];
-            var tr = template.clone().show();
-            tr.attr("id", app.id);
-            tr.find('.name').find("a").html(app.name);
-            tbody.append(tr);
+            
+            if(app.name !== "MonoDev") {
+                var tr = template.clone().show();
+                tr.attr("id", app.id);
+                tr.find('.name').find("a").html(app.name);
+                tbody.append(tr);
+            }
         }
     }
     
