@@ -13,9 +13,10 @@ define([
             buildTable(data);
         });
         var appId;
+        
+        // Click on an operation button
         $('#appsTable').on("click", ".btn", function() {
             var operation = $(this).attr("data-operation");
-
             appId = $(this).closest("[id]").attr("id");
 
             if(operation) {
@@ -24,14 +25,34 @@ define([
         });
 
         $("#yesButton").on("click", function() {
-            $("#"+appId).find(".spinner").show();
-            $("#"+appId).find(".operations").hide();
-            $("#modal").modal("hide");
+            var operationName = $("#operationName").text().toLowerCase();
+            switch(operationName){
+                case "delete":
+                    $("#"+appId).find(".spinner").show();
+                    $("#"+appId).find(".operations").hide();
+                    $("#modal").modal("hide");
 
-            self.link("delete", { data : appId }, function(err, data) {
-                if(err) return showError(err);
-                $("#" + appId).fadeOut(FADE_TIME);
-            });
+                    window.setTimeout(function(){
+                        $("#" + appId).fadeOut(FADE_TIME);
+                    }, 3000);
+                    return;
+                    
+                    self.link("delete", { data : appId }, function(err, data) {
+                        if(err) return showError(err);
+                        $("#" + appId).fadeOut(FADE_TIME);
+                    });
+                break;
+                case "redeploy":
+                    $("#"+appId).find(".spinner").show();
+                    $("#"+appId).find(".operations").hide();
+                    $("#modal").modal("hide");             
+                    self.link("redeploy", { data: appId }, function(err, data) {
+                        $("#"+appId).find(".operations").show();
+                        $("#"+appId).find(".spinner").hide();
+                        if(err) return showError(err);
+                    });
+                break;
+            }
         });
     }
     
@@ -48,15 +69,22 @@ define([
         }
     }
     
+    // Show error
     function showError(err) {
-        $("#errorAlert").text("Error: " + err).fadeIn();
+        $("#errorAlert").html("Error: " + err).fadeIn();
     }
     
     // Confirm Modal
     function confirmAction(operation) {
         switch(operation){
             case "delete":
+                $("#operationName").html("Delete");
                 $("#question").html("Are you really <b>sure</b> that you want to delete this application?");
+                $("#modal").modal('show');
+            break;
+            case "redeploy":
+                $("#operationName").html("Redeploy");
+                $("#question").html("Are you sure that you want to redeploy this application?");
                 $("#modal").modal('show');
             break;
         }
