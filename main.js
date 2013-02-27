@@ -16,7 +16,9 @@ define([
         
         // Click on an operation button
         $('#appsTable').on("click", ".btn", function() {
+
             var operation = $(this).attr("data-operation");
+            
             appId = $(this).closest("[id]").attr("id");
 
             if(operation) {
@@ -26,26 +28,33 @@ define([
 
         $("#yesButton").on("click", function() {
             var operationName = $("#operationName").text().toLowerCase();
+
+            $("#"+appId).find(".spinner").show();
+            $("#"+appId).find(".operations").hide();
+            $("#modal").modal("hide");
+                                        
             switch(operationName){
                 case "delete":
-                    $("#"+appId).find(".spinner").show();
-                    $("#"+appId).find(".operations").hide();
-                    $("#modal").modal("hide");                    
                     self.link("delete", { data : appId }, function(err, data) {
                         if(err) return showError(err);
                         $("#" + appId).fadeOut(FADE_TIME);
                     });
                 break;
                 case "redeploy":
-                    $("#"+appId).find(".spinner").show();
-                    $("#"+appId).find(".operations").hide();
-                    $("#modal").modal("hide");             
                     self.link("redeploy", { data: appId }, function(err, data) {
                         $("#"+appId).find(".operations").show();
                         $("#"+appId).find(".spinner").hide();
                         if(err) return showError(err);
                     });
                 break;
+                case "update":
+                    self.link("update", { data: appId }, function(err, data) {
+                        $("#"+appId).find(".operations").show();
+                        $("#"+appId).find(".spinner").hide();
+                        if(err) return showError(err);
+                    });
+                break;
+
             }
         });
     }
@@ -58,7 +67,7 @@ define([
             var app = apps[i];
             
             if(app.name !== "MonoDev") {
-                var tr = template.clone().show();
+                var tr = template.clone().removeClass("template").show();
                 tr.attr("id", app.id);
                 tr.find('.name').find("a").html(app.name);
                 tbody.append(tr);
@@ -84,7 +93,16 @@ define([
                 $("#question").html("Are you sure that you want to redeploy this application?");
                 $("#modal").modal('show');
             break;
+            case "update":
+                $("#operationName").html("Update");
+                $("#question").html("Are you sure that you want to update this application?");
+                $("#modal").modal('show');
+            break;
         }
+    }
+    
+    function finishOperation() {
+    
     }
     
     return init;
