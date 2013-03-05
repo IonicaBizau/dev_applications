@@ -39,7 +39,27 @@ exports.edit = function(link) {
 
 // Update app function
 exports.update = function(link) {
-    send.ok(link.res, "OK");
+    var appId = link.data;
+
+    console.log("------------");
+    console.log("Starting UPDATE operation...");
+            
+    var deployer = spawn("node", [CONFIG.root + "/admin/scripts/installation/update_app.js", CONFIG.APPLICATION_ROOT + "/" + appId]);
+
+    deployer.stderr.pipe(process.stderr);
+    deployer.stdout.pipe(process.stdout);
+
+    deployer.on('exit', function(code) {
+        if (code) {
+            send.internalservererror(link, "Update failed for application: " + appId);
+        } else {
+            console.log("Application " + appId + " successfully updated.");
+            console.log("------------");
+            send.ok(link.res, "Application " + appId + " successfully updated.");
+        }
+    });
+
+//    send.ok(link.res, "OK");
 }
 
 // Delete app function
