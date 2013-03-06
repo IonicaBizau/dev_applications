@@ -5,6 +5,7 @@
     "main": "main.js",
     "operations": [
         { "file": "operations.js", "function": "redeploy" },
+        { "file": "operations.js", "function": "redeployMonoDev" },
         { "file": "operations.js", "function": "start" },
         { "file": "operations.js", "function": "stop" },
         { "file": "operations.js", "function": "edit" },

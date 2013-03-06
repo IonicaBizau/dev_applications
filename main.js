@@ -8,10 +8,28 @@ define([
     
     function init(config) {
         self = this;
+        
+        // Click on redeployMonoDev button
+        $("#redeployMonoDev").on("click", function() {
+            var redeployButton = $(this);
+            redeployButton.button("loading");
+            self.link("redeployMonoDev", function(err) {
+                if (err) {
+                    showError("Failed to redeploy MonoDev.");
+                    return;
+                }
+
+                redeployButton.button("reset");
+                console.log("Successfully repdeployed.");
+            });
+        });
+        
+        // Get the applications data
         self.link("applications", function(err, data) {
             if(err) return showError(err);
             buildTable(data);
         });
+        
         var appId;
         
         // Click on an operation button
@@ -26,6 +44,7 @@ define([
             }
         });
 
+        // Click on Yes button of modal
         $("#yesButton").on("click", function() {
             var operationName = $("#operationName").text().toLowerCase();
 
@@ -99,10 +118,6 @@ define([
                 $("#modal").modal('show');
             break;
         }
-    }
-    
-    function finishOperation() {
-    
     }
     
     return init;

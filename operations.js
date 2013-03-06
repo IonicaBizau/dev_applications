@@ -88,3 +88,21 @@ exports.applications = function(link) {
         send.ok(link.res, appsObjects);
     });
 }
+
+// Redeploy MonoDev
+exports.redeployMonoDev = function(link) {
+    console.log("-- MonoDev Redeployment --");
+    
+    var deployer = spawn("node", [CONFIG.root + "/admin/scripts/installation/reinstall_app.js", CONFIG.root + "/apps/00000000000000000000000000000002/mono.json"]);
+    deployer.stderr.pipe(process.stderr);
+    deployer.stdout.pipe(process.stdout);
+
+    deployer.on('exit', function(code) {
+        if (code) {
+            send.internalservererror(link, "Redeployment failed for MonoDev");
+        } else {
+            send.ok(link.res, "MonoDev successfully deployed.");
+        }
+        console.log("-- MonoDev Redeployment Ended --");
+    });
+}
