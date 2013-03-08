@@ -41,10 +41,13 @@ define([
         $("#yesButton").on("click", function() {
             var operationName = $("#operationName").text().toLowerCase();
 
-            $("#"+appId).find(".spinner").show();
-            $("#"+appId).find(".operations").hide();
+            if(operationName !== "redeploy monodev") {
+                $("#"+appId).find(".spinner").show();
+                $("#"+appId).find(".operations").hide();
+            }
+            
             $("#modal").modal("hide");
-
+            
             var successLabel = " <span class='label label-success'>Success</span>";
             var infoLabel = " <span class='label label-info'>Info</span>";
             var errorLabel = " <span class='label label-important'>Error</span>";

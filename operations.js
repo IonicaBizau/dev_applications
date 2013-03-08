@@ -95,11 +95,12 @@ exports.delete = function(link) {
 // Get apps names function
 exports.applications = function(link) {
     apps.getApplications(function(err, appsObjects){
-        console.log(appsObjects);
 
         if (err) {
             return send.internalservererror(link, err);
         }
+
+        appsObjects = sortAppsArray(appsObjects);
 
         send.ok(link.res, appsObjects);
     });
@@ -109,7 +110,10 @@ exports.applications = function(link) {
 exports.redeployMonoDev = function(link) {
     console.log("-- MonoDev Redeployment --");
     
-    var deployer = spawn("node", [CONFIG.root + "/admin/scripts/installation/reinstall_app.js", CONFIG.root + "/apps/00000000000000000000000000000002/mono.json"]);
+    var jsonFile = "/apps/00000000000000000000000000000002/mono.json";
+    
+    var deployer = spawn("node", [CONFIG.root + "/admin/scripts/installation/reinstall_app.js", CONFIG.root + jsonFile]);
+    
     deployer.stderr.pipe(process.stderr);
     deployer.stdout.pipe(process.stdout);
 
@@ -121,4 +125,33 @@ exports.redeployMonoDev = function(link) {
         }
         console.log("-- MonoDev Redeployment Ended --");
     });
+}
+
+// Sort alphabetically
+function sortAppsArray(array) {
+    var names = [];
+    
+    var sorted = [];
+    
+    for (var i in array) {
+        names.push(array[i].name);
+    }
+    
+    names.sort();
+    
+    function getAppByName(name) {
+        for(var i in array) {
+            if(name === array[i].name) {
+                var app = array[i];
+                array.slice(i);
+                return app;
+            }
+        }
+    }
+    
+    for (var i in names) {
+        sorted.push(getAppByName(names[i]));
+    }
+    
+    return sorted;
 }
