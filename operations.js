@@ -38,42 +38,16 @@ exports.edit = function(link) {
 
 // Update app function
 exports.update = function(link) {
-    // Application ID
+    
     var appId = link.data;
-
-    // Start the Update operation
-    console.log("------------");
-    console.log("Starting UPDATE operation...");
-
-    var updater = spawn("node", [CONFIG.root + "/admin/scripts/installation/update_app.js", CONFIG.APPLICATION_ROOT + "/" + appId]);
-
-    updater.stderr.pipe(process.stderr);
-    updater.stdout.pipe(process.stdout);
-
-    // Finished the operation
-    updater.on('exit', function(code) {
-        if (code) {
-            console.log(">>>>> Code: " + code);
-            
-            var errors = [
-                "",
-                "Please provide an application id as argument.",
-                "This application doesn't contain the repository field.",
-                "This application doesn't contain the repository.url field.",
-                "Failed to make temp directory.",
-                "Download of zip failed.",
-                "The application was not found in the databse. Application deployment failed somehow. :(",
-                "Unknown reason. Maybe if you check @/core/getLog you will see the error.",
-                "Failed to connect to OrientDB",
-                "The ID doesn't exist in database. Update failed."
-            ];
-            
-            send.internalservererror(link, "Update failed for application: " + appId + ". Error: " + errors[code] + " Error code: " + code);
-        } else {
-            console.log("Application " + appId + " successfully updated.");
-            console.log("------------");
-            send.ok(link.res, "Application " + appId + " successfully updated.");
-        }
+    
+    apps.updateApplication(appId, function(err, result) {
+         
+         if (err) {
+             return send.internalservererror(link, err);
+         }
+         
+         send.ok(link.res, result);
     });
 }
 
@@ -81,14 +55,15 @@ exports.update = function(link) {
 exports.delete = function(link) {
 
     var id = link.data;
-
-    apps.uninstall(CONFIG.APPLICATION_ROOT + id + "/mono.json", function(err) {
+    var appDescriptorPath = CONFIG.APPLICATION_ROOT + id + "/mono.json";
+        
+    apps.uninstall(appDescriptorPath, function(err) {
 
         if (err) {
             return send.internalservererror(link, err);
         }
 
-        send.ok(link.res)
+        send.ok(link.res);
     });
 }
 
