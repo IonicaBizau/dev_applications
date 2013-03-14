@@ -1,22 +1,19 @@
 var spawn = require("child_process").spawn;
 
-var send  = require(CONFIG.root + "/core/send.js").send;
-var apps = require(CONFIG.root + "/api/apps");
-
 // Redeploy app function
 exports.redeploy = function(link) {
 
     var appId = link.data;
-    var deployer = spawn("node", [CONFIG.root + "/admin/scripts/installation/reinstall_app.js", CONFIG.APPLICATION_ROOT + "/" + appId + "/mono.json"]);
+    var deployer = spawn("node", [M.config.root + "/admin/scripts/installation/reinstall_app.js", M.config.APPLICATION_ROOT + "/" + appId + "/mono.json"]);
 
     deployer.stderr.pipe(process.stderr);
     deployer.stdout.pipe(process.stdout);
 
     deployer.on('exit', function(code) {
         if (code) {
-            send.internalservererror(link, "Redeployment failed for application: " + appId);
+            link.send(500, "Redeployment failed for application: " + appId);
         } else {
-            send.ok(link.res, "Application " + appId + "successfully deployed.");
+            link.send(200, "Application " + appId + "successfully deployed.");
         }
     });
 }
@@ -38,16 +35,41 @@ exports.edit = function(link) {
 
 // Update app function
 exports.update = function(link) {
-    
+    // Application ID
     var appId = link.data;
-    
-    apps.updateApplication(appId, function(err, result) {
-         
-         if (err) {
-             return send.internalservererror(link, err);
-         }
-         
-         send.ok(link.res, result);
+
+    // Start the Update operation
+    console.log("------------");
+    console.log("Starting UPDATE operation...");
+
+    var updater = spawn("node", [M.config.root + "/admin/scripts/installation/update_app.js", M.config.APPLICATION_ROOT + "/" + appId]);
+
+    updater.stderr.pipe(process.stderr);
+    updater.stdout.pipe(process.stdout);
+
+    // Finished the operation
+    updater.on('exit', function(code) {
+        if (code) {
+            
+            var errors = [
+                "",
+                "Please provide an application id as argument.",
+                "This application doesn't contain the repository field.",
+                "This application doesn't contain the repository.url field.",
+                "Failed to make temp directory.",
+                "Download of zip failed.",
+                "The application was not found in the databse. Application deployment failed somehow. :(",
+                "Unknown reason. Maybe if you check @/core/getLog you will see the error.",
+                "Failed to connect to OrientDB",
+                "The ID doesn't exist in database. Update failed."
+            ];
+            
+            link.send(500, "Update failed for application: " + appId + ". Error: " + errors[code] + " Error code: " + code);
+        } else {
+            console.log("Application " + appId + " successfully updated.");
+            console.log("------------");
+            link.send(200, "Application " + appId + " successfully updated.");
+        }
     });
 }
 
@@ -55,15 +77,14 @@ exports.update = function(link) {
 exports.delete = function(link) {
 
     var id = link.data;
-    var appDescriptorPath = CONFIG.APPLICATION_ROOT + id + "/mono.json";
-        
-    apps.uninstall(appDescriptorPath, function(err) {
+
+    apps.uninstall(M.config.APPLICATION_ROOT + id + "/mono.json", function(err) {
 
         if (err) {
-            return send.internalservererror(link, err);
+            return link.send(500, err);
         }
 
-        send.ok(link.res);
+        link.send(200)
     });
 }
 
@@ -72,12 +93,12 @@ exports.applications = function(link) {
     apps.getApplications(function(err, appsObjects){
 
         if (err) {
-            return send.internalservererror(link, err);
+            return link.send(500, err);
         }
 
         appsObjects = sortAppsArray(appsObjects);
 
-        send.ok(link.res, appsObjects);
+        link.send(200, appsObjects);
     });
 }
 
@@ -87,16 +108,16 @@ exports.redeployMonoDev = function(link) {
     
     var jsonFile = "/apps/00000000000000000000000000000002/mono.json";
     
-    var deployer = spawn("node", [CONFIG.root + "/admin/scripts/installation/reinstall_app.js", CONFIG.root + jsonFile]);
+    var deployer = spawn("node", [M.config.root + "/admin/scripts/installation/reinstall_app.js", M.config.root + jsonFile]);
     
     deployer.stderr.pipe(process.stderr);
     deployer.stdout.pipe(process.stdout);
 
     deployer.on('exit', function(code) {
         if (code) {
-            send.internalservererror(link, "Redeployment failed for MonoDev");
+            link.send(500, "Redeployment failed for MonoDev");
         } else {
-            send.ok(link.res, "MonoDev successfully deployed.");
+            link.send(200, "MonoDev successfully deployed.");
         }
         console.log("-- MonoDev Redeployment Ended --");
     });
