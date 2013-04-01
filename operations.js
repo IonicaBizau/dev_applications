@@ -78,7 +78,7 @@ exports.delete = function(link) {
 
     var id = link.data;
 
-    apps.uninstall(M.config.APPLICATION_ROOT + id + "/mono.json", function(err) {
+    M.app.uninstall(M.config.APPLICATION_ROOT + id + "/mono.json", function(err) {
 
         if (err) {
             return link.send(500, err);
@@ -90,7 +90,7 @@ exports.delete = function(link) {
 
 // Get apps names function
 exports.applications = function(link) {
-    apps.getApplications(function(err, appsObjects){
+    M.app.getApplications(function(err, appsObjects){
 
         if (err) {
             return link.send(500, err);
@@ -151,3 +151,4 @@ function sortAppsArray(array) {
     
     return sorted;
 }
+
