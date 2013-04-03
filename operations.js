@@ -4,29 +4,26 @@ var spawn = require("child_process").spawn;
 exports.redeploy = function(link) {
 
     var appId = link.data;
-    var deployer = spawn("node", [M.config.root + "/admin/scripts/installation/reinstall_app.js", M.config.APPLICATION_ROOT + "/" + appId + "/mono.json"]);
+    M.app.redeploy(appId, function(err) {
 
-    deployer.stderr.pipe(process.stderr);
-    deployer.stdout.pipe(process.stdout);
-
-    deployer.on('exit', function(code) {
-        if (code) {
-            link.send(500, "Redeployment failed for application: " + appId);
-        } else {
-            link.send(200, "Application " + appId + "successfully deployed.");
+        if (err) {
+            link.send(500, err.message);
+            return;
         }
+
+        link.send(200);
     });
-}
+};
 
 // Start app function
 exports.start = function(link) {
 
-}
+};
 
 // Stop app function
 exports.stop = function(link) {
 
-}
+};
 
 // Edit app function
 exports.edit = function(link) {
@@ -76,12 +73,12 @@ exports.update = function(link) {
 // Delete app function
 exports.delete = function(link) {
 
-    var id = link.data;
+    var appId = link.data;
 
-    M.app.uninstall(M.config.APPLICATION_ROOT + id + "/mono.json", function(err) {
+    M.app.remove(appId, function(err) {
 
         if (err) {
-            return link.send(500, err);
+            return link.send(500, err.message);
         }
 
         link.send(200)
