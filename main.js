@@ -60,7 +60,11 @@ define([
                 case "delete":
                     self.link("delete", { data : appId }, function(err, data) {
                         var icon = "<i class='icon-trash'></i> ";
-                        if (err) return showError(icon + err + errorLabel);
+                        if (err) {
+                            $("#"+appId).find(".spinner").hide();
+                            $("#"+appId).find(".operations").show();
+                            return showError(icon + err + errorLabel);
+                        }
                         var message = icon + "<strong>" + getAppNameById(appId) + "</strong> successfully <strong>deleted</strong>." + successLabel;
                         showSuccessMessage(message);
                         $("#" + appId).fadeOut(FADE_TIME);
@@ -69,8 +73,8 @@ define([
                 case "redeploy":
                     self.link("redeploy", { data: appId }, function(err, data) {
                         var icon = "<i class='icon-refresh'></i> ";
-                        $("#"+appId).find(".operations").show();
                         $("#"+appId).find(".spinner").hide();
+                        $("#"+appId).find(".operations").show();
                         if (err) return showError(icon + err + errorLabel);
                         var message = icon + "<strong>" + getAppNameById(appId) + "</strong> successfully <strong>redeployed</strong>." + successLabel;
                         showSuccessMessage(message);
@@ -89,8 +93,8 @@ define([
                 case "update":
                     self.link("update", { data: appId }, function(err, data) {
                         var icon = "<i class='icon-download'></i> ";
-                        $("#"+appId).find(".operations").show();
                         $("#"+appId).find(".spinner").hide();
+                        $("#"+appId).find(".operations").show();
                         if (err) return showError(icon + err + errorLabel);
                         var message = icon + "<strong>" + getAppNameById(appId) + "</strong> successfully <strong>updated</strong>." + successLabel;
                         showSuccessMessage(message);
