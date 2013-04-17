@@ -1,4 +1,4 @@
-var spawn = require("child_process").spawn;
+var spawn = require('child_process').spawn;
 
 // Redeploy app function
 exports.redeploy = function(link) {
@@ -78,22 +78,22 @@ exports.applications = function(link) {
 
 // Redeploy MonoDev
 exports.redeployMonoDev = function(link) {
-    console.log("-- MonoDev Redeployment --");
-    
-    var jsonFile = "/apps/00000000000000000000000000000002/mono.json";
-    
-    var deployer = spawn("node", [M.config.root + "/admin/scripts/installation/reinstall_app.js", M.config.root + jsonFile]);
-    
-    deployer.stderr.pipe(process.stderr);
-    deployer.stdout.pipe(process.stdout);
 
-    deployer.on('exit', function(code) {
+    var env = process.env;
+    env.MONO_DEV_APP_ID = M.config.app.id;
+    env.MONO_DEV_GIT_URL = 'git@github.com:jillix/MonoDev.git';
+
+    var node = spawn('node', [M.config.APPLICATION_ROOT + M.config.app.id + '/reinstall.js'], { env: process.env, detached: true });
+
+    node.stderr.pipe(process.stderr);
+    node.stdout.pipe(process.stdout);
+
+    node.on('exit', function(code) {
         if (code) {
-            link.send(500, "Redeployment failed for MonoDev");
+            link.send(500, 'Redeployment failed for MonoDev');
         } else {
-            link.send(200, "MonoDev successfully deployed.");
+            link.send(200, 'MonoDev successfully deployed.');
         }
-        console.log("-- MonoDev Redeployment Ended --");
     });
 };
 
@@ -110,8 +110,8 @@ function sortAppsArray(array) {
     names.sort();
     
     function getAppByName(name) {
-        for(var i in array) {
-            if(name === array[i].name) {
+        for (var i in array) {
+            if (name === array[i].name) {
                 var app = array[i];
                 array.slice(i);
                 return app;
