@@ -93,10 +93,13 @@ exports.redeployMonoDev = function(link) {
         switch (code) {
             case 0:
                 link.send(200, 'MonoDev successfully deployed.');
+                return;
             case 1:
                 link.send(304, 'MonoDev already up-to-date');
+                return;
             default:
                 link.send(500, 'Redeployment failed for MonoDev');
+                return;
         }
     });
 };

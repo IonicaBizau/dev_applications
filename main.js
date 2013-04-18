@@ -86,7 +86,10 @@ define([
                     self.link("redeployMonoDev", { data: appId }, function(err, data) {
                         redeployButton.button("reset");
                         var icon = "<i class='icon-refresh'></i> ";
-                        if (err) return showError(icon + err + errorLabel);
+
+                        if (err || !data) return showError(icon + (err || 'Missing response data') + errorLabel);
+                        if (data.status === 1) return showWarning(icon + data.message + warningLabel);
+
                         var message = icon + "<strong>MonoDev</strong> successfully<strong> redeployed. Refresh the page.</strong>." + successLabel;
                         showSuccessMessage(message);
                     });
