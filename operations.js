@@ -89,10 +89,14 @@ exports.redeployMonoDev = function(link) {
     node.stdout.pipe(process.stdout);
 
     node.on('exit', function(code) {
-        if (code) {
-            link.send(500, 'Redeployment failed for MonoDev');
-        } else {
-            link.send(200, 'MonoDev successfully deployed.');
+
+        switch (code) {
+            case 0:
+                link.send(200, 'MonoDev successfully deployed.');
+            case 1:
+                link.send(304, 'MonoDev already up-to-date');
+            default:
+                link.send(500, 'Redeployment failed for MonoDev');
         }
     });
 };
