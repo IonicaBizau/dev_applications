@@ -51,6 +51,7 @@ define([
             var successLabel = " <span class='label label-success'>Success</span>";
             var infoLabel = " <span class='label label-info'>Info</span>";
             var errorLabel = " <span class='label label-important'>Error</span>";
+            var warningLabel = " <span class='label label-warning'>Warning</span>";
             
             var icon = "<i class='icon-info-sign'></i> ";
             
@@ -93,9 +94,13 @@ define([
                 case "update":
                     self.link("update", { data: appId }, function(err, data) {
                         var icon = "<i class='icon-download'></i> ";
+
                         $("#"+appId).find(".spinner").hide();
                         $("#"+appId).find(".operations").show();
+
                         if (err) return showError(icon + err + errorLabel);
+                        if (!data) return showWarning(icon + 'Application already at its newest version.' + warningLabel);
+
                         var message = icon + "<strong>" + getAppNameById(appId) + "</strong> successfully <strong>updated</strong>." + successLabel;
                         showSuccessMessage(message);
                     });
@@ -127,12 +132,22 @@ define([
         template.find(".message").html(err);
 
         template.fadeIn();
+
+        $("#alerts").append(template);
+    }
+
+    // Show warning
+    function showWarning(err) {
+        var template = $("#warningAlert").clone().attr("id", "");
+        template.find(".message").html(err);
+
+        template.fadeIn();
         
         $("#alerts").append(template);
     }
     
     function showStartOperationMessage(message) {
-        var template = $("#warningAlert").clone().attr("id", "");
+        var template = $("#infoAlert").clone().attr("id", "");
 
         template.find(".message").html(message);
         template.fadeIn();

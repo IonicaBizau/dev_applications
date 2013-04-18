@@ -36,13 +36,13 @@ exports.update = function(link) {
 
     var appId = link.data;
 
-    M.app.update(appId, function(err) {
+    M.app.update(appId, function(err, wasUpdated) {
 
         if (err) {
             return link.send(500, err.message);
         }
 
-        link.send(200)
+        link.send(200, wasUpdated);
     });
 }
 
