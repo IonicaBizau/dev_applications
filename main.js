@@ -112,7 +112,7 @@ module.exports = function (config) {
 
 // Build table with apps names
 function buildTable (apps) {   
-    var template = $('.template');
+    var template = $('.template', self.dom);
     var tbody = $('#appsTable').find('tbody');
     for (var i in apps) {
         var app = apps[i];
