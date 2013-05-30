@@ -76,6 +76,22 @@ exports.applications = function(link) {
     });
 };
 
+exports.deploy = function (link) {
+   
+    if (!link.data) { return link.send(400, "Missing data."); }
+
+    M.app.fetch(link.data, function(err, descriptor) {
+
+        if (err) { return link.send(400, err); }
+
+        M.app.install(descriptor, function(err) {
+            if (err) { return link.send(400, err); }
+
+            link.send(200);
+        });
+    });
+};
+
 // Redeploy MonoDev
 exports.redeployMonoDev = function(link) {
 

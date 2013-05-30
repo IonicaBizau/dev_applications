@@ -18,7 +18,13 @@ module.exports = function (config, dataContext) {
     handlers(dataContext);
     
     // isn't this an installed application?
-    if (typeof dataContext.roles !== "object") {
+    // TODO
+    //  if (typeof dataContext.roles !== "object") {
+
+    // This method it's a little bit hacky.
+    // If an application failed to install, it doesn't has roles.
+    var installed = $(".left .installedApps .active").length;
+    if (!installed) {
         $(".buttons button").hide();
         $(".buttons button[data-operation='deploy']").show();
         return;
@@ -116,6 +122,9 @@ function handlers(dataContext) {
                     var message = icon + '<strong>' + dataContext.name + '</strong> successfully <strong>deleted</strong>.' + successLabel;
                     showSuccessMessage(message);
                     $('#' + appId).fadeOut();
+                    showInfoMessage("Please select an application to see its details."); 
+                    $(".buttons").hide();
+                    self.emit("installedAppsChanged");
                 });
             break;
             case 'deploy':
@@ -126,6 +135,7 @@ function handlers(dataContext) {
                     if (err) return showError(icon + err + errorLabel);
                     var message = icon + '<strong>' + dataContext.name + '</strong> successfully <strong>deployed</strong>.' + successLabel;
                     showSuccessMessage(message);
+                    self.emit("installedAppsChanged");
                 });
             break;
             case 'redeploy':
