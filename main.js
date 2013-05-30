@@ -1,37 +1,87 @@
-
 var self;
 
-var FADE_TIME = 500;
-var appsArray = [];
+var Bind = require('github/jillix/bind');
+var Events = require('github/jillix/events');
 
-module.exports = function (config) {
+var appId;
+
+module.exports = function (config, dataContext) {
+
+    // nothing selected. e.g.: on load
+    if (!dataContext) { 
+        showInfoMessage("Please select an application to see its details."); 
+        $(".buttons").hide();
+        return;
+    } else { $(".buttons").fadeIn(); }
+    
     self = this;
-
-    var redeployButton = $('#redeployMonoDev');
-            
-    // Get the applications data
-    self.link('applications', function(err, data) {
-        if (err) return showError(err);
-        appsArray = data;
-        
-        buildTable(data);
-    });
+    handlers(dataContext);
     
-    var appId;
-    
-    // Click on an operation button
-    $('#redeployMonoDev').on('click', function() {
-        confirmAction('redeployMonoDev');
-    });
+    // isn't this an installed application?
+    if (typeof dataContext.roles !== "object") {
+        $(".buttons button").hide();
+        $(".buttons button[data-operation='deploy']").show();
+        return;
+    }
 
-    $('#appsTable').on('click', '.btn', function() {
+    // it's a Mono application, so hide the deploy button
+    $(".buttons button[data-operation='deploy']").hide();
+    
+    Events.call(self, config);
+
+    appId = dataContext.id;
+};
+
+////////////////////////////
+// Bootstrap alert functions
+////////////////////////////
+
+function showError (err) {
+    var template = $('#errorAlert').clone().attr('id', '');
+    template.find('.message').html(err);
+
+    template.fadeIn();
+
+    $('#alerts').append(template);
+}
+
+function showWarning (err) {
+    var template = $('#warningAlert').clone().attr('id', '');
+    template.find('.message').html(err);
+
+    template.fadeIn();
+    
+    $('#alerts').append(template);
+}
+
+function showInfoMessage (message) {
+    var template = $('#infoAlert').clone().attr('id', '');
+
+    template.find('.message').html(message);
+    template.fadeIn();
+    
+    $('#alerts').append(template);
+}
+
+function showSuccessMessage (message) {
+    var template = $('#successAlert').clone().attr('id', '');
+
+    template.find('.message').html(message);
+    template.fadeIn();
+    
+    $('#alerts').append(template);
+}
+
+//////////////////////
+// Operation functions
+//////////////////////
+function handlers(dataContext) {
+    
+    // click on buttons
+    $(self.dom).on('click', '.btn', function() {
         var operation = $(this).attr('data-operation');
-        
-        appId = $(this).closest('[id]').attr('id');
 
-        if (operation) {
-            confirmAction(operation);
-        }
+        if (operation) { confirmAction(operation, dataContext); }
     });
 
     // Click on Yes button of modal
@@ -52,7 +102,7 @@ module.exports = function (config) {
         
         var icon = '<i class="icon-info-sign"></i> ';
         
-        showStartOperationMessage(icon + 'Started <strong>' + $('#operationName').text() + '</strong> operation for <strong>' + getAppNameById(appId) + '</strong>' + infoLabel);
+        showInfoMessage(icon + 'Started <strong>' + $('#operationName').text() + '</strong> operation for <strong>' + dataContext.name + '</strong>' + infoLabel);
 
         switch (operationName){
             case 'delete':
@@ -63,9 +113,19 @@ module.exports = function (config) {
                         $('#' + appId).find('.operations').show();
                         return showError(icon + err + errorLabel);
                     }
-                    var message = icon + '<strong>' + getAppNameById(appId) + '</strong> successfully <strong>deleted</strong>.' + successLabel;
+                    var message = icon + '<strong>' + dataContext.name + '</strong> successfully <strong>deleted</strong>.' + successLabel;
                     showSuccessMessage(message);
-                    $('#' + appId).fadeOut(FADE_TIME);
+                    $('#' + appId).fadeOut();
+                });
+            break;
+            case 'deploy':
+                self.link('deploy', { data: dataContext.repo_url }, function(err, data) {
+                    var icon = '<i class="icon-refresh"></i> ';
+                    $('#' + appId).find('.spinner').hide();
+                    $('#' + appId).find('.operations').show();
+                    if (err) return showError(icon + err + errorLabel);
+                    var message = icon + '<strong>' + dataContext.name + '</strong> successfully <strong>deployed</strong>.' + successLabel;
+                    showSuccessMessage(message);
                 });
             break;
             case 'redeploy':
@@ -74,20 +134,7 @@ module.exports = function (config) {
                     $('#' + appId).find('.spinner').hide();
                     $('#' + appId).find('.operations').show();
                     if (err) return showError(icon + err + errorLabel);
-                    var message = icon + '<strong>' + getAppNameById(appId) + '</strong> successfully <strong>redeployed</strong>.' + successLabel;
-                    showSuccessMessage(message);
-                });
-            break;
-            case 'redeploy monodev':
-                redeployButton.button('loading');
-                self.link('redeployMonoDev', { data: appId }, function(err, data) {
-                    redeployButton.button('reset');
-                    var icon = '<i class="icon-refresh"></i> ';
-
-                    if (err || !data) return showError(icon + (err || 'Missing response data') + errorLabel);
-                    if (data.status === 1) return showWarning(icon + data.message + warningLabel);
-
-                    var message = icon + '<strong>MonoDev</strong> successfully<strong> redeployed. Refresh the page.</strong>.' + successLabel;
+                    var message = icon + '<strong>' + dataContext.name + '</strong> successfully <strong>redeployed</strong>.' + successLabel;
                     showSuccessMessage(message);
                 });
             break;
@@ -101,102 +148,36 @@ module.exports = function (config) {
                     if (err) return showError(icon + err + errorLabel);
                     if (!data) return showWarning(icon + 'Application already at its newest version.' + warningLabel);
 
-                    var message = icon + '<strong>' + getAppNameById(appId) + '</strong> successfully <strong>updated</strong>.' + successLabel;
+                    var message = icon + '<strong>' + dataContext.name + '</strong> successfully <strong>updated</strong>.' + successLabel;
                     showSuccessMessage(message);
                 });
             break;
-
         }
     });
-};
-
-// Build table with apps names
-function buildTable (apps) {   
-    var template = $('.template', self.dom);
-    var tbody = $('#appsTable').find('tbody');
-    for (var i in apps) {
-        var app = apps[i];
-        
-        if (app.name !== 'MonoDev') {
-            var tr = template.clone().removeClass('template').show();
-            tr.attr('id', app.id);
-            tr.find('.name').find('a').html(app.name);
-            tbody.append(tr);
-        }
-    }
-}
-
-// Show error
-function showError (err) {
-    var template = $('#errorAlert').clone().attr('id', '');
-    template.find('.message').html(err);
-
-    template.fadeIn();
-
-    $('#alerts').append(template);
-}
-
-// Show warning
-function showWarning (err) {
-    var template = $('#warningAlert').clone().attr('id', '');
-    template.find('.message').html(err);
-
-    template.fadeIn();
-    
-    $('#alerts').append(template);
-}
-
-function showStartOperationMessage (message) {
-    var template = $('#infoAlert').clone().attr('id', '');
-
-    template.find('.message').html(message);
-    template.fadeIn();
-    
-    $('#alerts').append(template);
-}
-
-function showSuccessMessage (message) {
-    var template = $('#successAlert').clone().attr('id', '');
-
-    template.find('.message').html(message);
-    template.fadeIn();
-    
-    $('#alerts').append(template);
 }
 
 // Confirm Modal
-function confirmAction (operation) {
+function confirmAction (operation, dataContext) {
     switch (operation){
         case 'delete':
             $('#operationName').html('Delete');
-            $('#question').html('Are you really <b>sure</b> that you want to delete this application?');
+            $('#question').html('Are you really <b>sure</b> that you want to delete ' + dataContext.name + '?');
+            $('#modal').modal('show');
+        break;
+        case 'deploy':
+            $('#operationName').html('Deploy');
+            $('#question').html('Are you sure you want to deploy ' + dataContext.name + ' from ' + dataContext.repo_url + '?');
             $('#modal').modal('show');
         break;
         case 'redeploy':
             $('#operationName').html('Redeploy');
-            $('#question').html('Are you sure that you want to redeploy this application?');
-            $('#modal').modal('show');
-        break;
-        case 'redeployMonoDev':
-            $('#operationName').html('Redeploy MonoDev');
-            $('#question').html('Are you sure that you want to redeploy <strong>MonoDev</strong>?');
+            $('#question').html('Are you sure that you want to redeploy ' + dataContext.name + '?');
             $('#modal').modal('show');
         break;
         case 'update':
             $('#operationName').html('Update');
-            $('#question').html('Are you sure that you want to update this application?');
+            $('#question').html('Are you sure that you want to update ' + dataContext.name + '?');
             $('#modal').modal('show');
         break;
     }
 }
-
-// Get application name by id
-function getAppNameById (appId) {
-    for (var app in appsArray) {
-        if (appsArray[app].id === appId) {
-            return appsArray[app].name;
-        }
-    }
-    return '';
-}
-
