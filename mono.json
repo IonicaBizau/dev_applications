@@ -5,6 +5,8 @@
     "dependencies": [
         "/main.js",
         "//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js",
+        "github/jillix/bind/v0.1.0",
+        "github/jillix/events/v0.1.0",
         "http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"
     ],
     "operations": [
