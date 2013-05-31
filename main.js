@@ -19,10 +19,11 @@ module.exports = function (config, dataContext) {
     
     // isn't this an installed application?
     // TODO
+
     //  if (typeof dataContext.roles !== "object") {
 
-    // This method it's a little bit hacky.
-    // If an application failed to install, it doesn't has roles.
+    // This method it a little bit hacky.
+    // If an application failed to install, it doesn't have roles.
     var installed = $(".left .installedApps .active").length;
     if (!installed) {
         $(".buttons button").hide();
