@@ -22,16 +22,22 @@ module.exports = function (config, dataContext) {
 
     //  if (typeof dataContext.roles !== "object") {
 
-    // This method it a little bit hacky.
+    // This method is a little bit hacky.
     // If an application failed to install, it doesn't have roles.
     var installed = $(".left .installedApps .active").length;
+
+    // TODO Implement dynamic links.
+    var editLink = "/edit?mongoId=" + dataContext._id;
+    $(".edit-link").attr("href", editLink);
+
     if (!installed) {
         $(".buttons button").hide();
         $(".buttons button[data-operation='deploy']").show();
+        $(".buttons button[data-operation='edit']").show();
         return;
     }
 
-    // it's a Mono application, so hide the deploy button
+    // it's an installed application, so hide the deploy button
     $(".buttons button[data-operation='deploy']").hide();
     
     Events.call(self, config);
