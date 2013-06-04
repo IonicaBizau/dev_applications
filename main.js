@@ -27,7 +27,7 @@ module.exports = function (config, dataContext) {
     var installed = $(".left .installedApps .active").length;
 
     // TODO Implement dynamic links.
-    var editLink = "/edit?mongoId=" + dataContext._id;
+    var editLink = "/edit?givenId=" + (dataContext._id || dataContext.id);
     $(".edit-link").attr("href", editLink);
 
     if (!installed) {
