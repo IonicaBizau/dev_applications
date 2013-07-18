@@ -5,44 +5,70 @@ var Events = require('github/jillix/events');
 
 var appId;
 
-module.exports = function (config, dataContext) {
+module.exports = function (config) {
 
     // nothing selected. e.g.: on load
-    if (!dataContext) { 
-        showInfoMessage("Please select an application to see its details."); 
-        $(".buttons").hide();
-        return;
-    } else { $(".buttons").fadeIn(); }
-    
+    showInfoMessage("Please select an application to see its details.");
+    $(".appDetails").hide();
+
     self = this;
-    handlers(dataContext);
-    
-    // isn't this an installed application?
-    // TODO
+    self.setInfo = function (dataContext) {
 
-    //  if (typeof dataContext.roles !== "object") {
+        handlers(dataContext);
 
-    // This method is a little bit hacky.
-    // If an application failed to install, it doesn't have roles.
-    var installed = $(".left .installedApps .active").length;
+        $(".appDetails").find("[data-field]").each(function () {
+            var value = dataContext[$(this).data("field")];
+            if (value) {
+                $(this).text(value);
+            }
+            else {
+                $(this).hide();
+            }
+        });
 
-    // TODO Implement dynamic links.
-    var editLink = "/edit?givenId=" + (dataContext._id || dataContext.id);
-    $(".edit-link").attr("href", editLink);
+        if (!dataContext) {
+            showInfoMessage("Please select an application to see its details.");
+            $(".appDetails").hide();
+            return;
+        } else { $(".appDetails").fadeIn(); }
 
-    if (!installed) {
-        $(".buttons button").hide();
-        $(".buttons button[data-operation='deploy']").show();
-        $(".buttons button[data-operation='edit']").show();
-        return;
-    }
 
-    // it's an installed application, so hide the deploy button
-    $(".buttons button[data-operation='deploy']").hide();
-    
+        // isn't this an installed application?
+        // TODO
+
+        //  if (typeof dataContext.roles !== "object") {
+
+        // This method is a little bit hacky.
+        // If an application failed to install, it doesn't have roles.
+        var installed = $(".left .installedApps #" + (dataContext.appId || dataContext.id)).length;
+
+        // TODO Implement dynamic links.
+        var editLink = "/edit?givenId=" + (dataContext._id || dataContext.id);
+        $(".edit-link").attr("href", editLink);
+
+        $(".actions .btn").fadeIn();
+        //////////////////////////////////////
+        // THE APPLICATION IS NOT INSTALLED //
+        //////////////////////////////////////
+        // <DEPLOY> <EDIT> //
+        /////////////////////
+        if (!installed) {
+            $(".actions .btn").hide();
+            $(".actions .btn[data-operation='deploy']").show();
+            $(".actions .btn[data-operation='edit']").show();
+            return;
+        }
+
+        //////////////////////////////////////
+        // THE APPLICATION IS NOT INSTALLED //
+        ///////////////////////////////////////////////////////
+        //  <REDEPLOY> <START/STOP> <EDIT> <UPDATE> <DELETE> //
+        ///////////////////////////////////////////////////////
+        $(".actions .btn[data-operation='deploy']").hide();
+        appId = dataContext.id || dataContext.appId;
+    };
+
     Events.call(self, config);
-
-    appId = dataContext.id;
 };
 
 ////////////////////////////
@@ -63,7 +89,7 @@ function showWarning (err) {
     template.find('.message').html(err);
 
     template.fadeIn();
-    
+
     $('#alerts').append(template);
 }
 
@@ -72,7 +98,7 @@ function showInfoMessage (message) {
 
     template.find('.message').html(message);
     template.fadeIn();
-    
+
     $('#alerts').append(template);
 }
 
@@ -81,7 +107,7 @@ function showSuccessMessage (message) {
 
     template.find('.message').html(message);
     template.fadeIn();
-    
+
     $('#alerts').append(template);
 }
 
@@ -89,9 +115,13 @@ function showSuccessMessage (message) {
 // Operation functions
 //////////////////////
 function handlers(dataContext) {
-    
+
+    // remove already set handlers
+    $(self.dom).off('click', '[data-operation]');
+    $('#yesButton').off('click');
+
     // click on buttons
-    $(self.dom).on('click', '.btn', function() {
+    $(self.dom).on('click', '[data-operation]', function() {
         var operation = $(this).attr('data-operation');
 
         if (operation) { confirmAction(operation, dataContext); }
@@ -105,16 +135,16 @@ function handlers(dataContext) {
             $('#' + appId).find('.spinner').show();
             $('#' + appId).find('.operations').hide();
         }
-        
+
         $('#modal').modal('hide');
-        
+
         var successLabel = ' <span class="label label-success">Success</span>';
         var infoLabel = ' <span class="label label-info">Info</span>';
         var errorLabel = ' <span class="label label-important">Error</span>';
         var warningLabel = ' <span class="label label-warning">Warning</span>';
-        
+
         var icon = '<i class="icon-info-sign"></i> ';
-        
+
         showInfoMessage(icon + 'Started <strong>' + $('#operationName').text() + '</strong> operation for <strong>' + dataContext.name + '</strong>' + infoLabel);
 
         switch (operationName){
@@ -129,8 +159,8 @@ function handlers(dataContext) {
                     var message = icon + '<strong>' + dataContext.name + '</strong> successfully <strong>deleted</strong>.' + successLabel;
                     showSuccessMessage(message);
                     $('#' + appId).fadeOut();
-                    showInfoMessage("Please select an application to see its details."); 
-                    $(".buttons").hide();
+                    showInfoMessage("Please select an application to see its details.");
+                    $(".actions").hide();
                     self.emit("installedAppsChanged");
                 });
             break;
@@ -178,22 +208,22 @@ function confirmAction (operation, dataContext) {
     switch (operation){
         case 'delete':
             $('#operationName').html('Delete');
-            $('#question').html('Are you really <b>sure</b> that you want to delete ' + dataContext.name + '?');
+            $('#question').html('Are you really <b>sure</b> that you want to delete <strong>' + dataContext.name + '</strong>?');
             $('#modal').modal('show');
         break;
         case 'deploy':
             $('#operationName').html('Deploy');
-            $('#question').html('Are you sure you want to deploy ' + dataContext.name + ' from ' + dataContext.repo_url + '?');
+            $('#question').html('Are you sure you want to deploy <strong>' + dataContext.name + '</strong> from <strong>' + dataContext.repo_url + '</strong>?');
             $('#modal').modal('show');
         break;
         case 'redeploy':
             $('#operationName').html('Redeploy');
-            $('#question').html('Are you sure that you want to redeploy ' + dataContext.name + '?');
+            $('#question').html('Are you sure that you want to redeploy <strong>' + dataContext.name + '</strong>?');
             $('#modal').modal('show');
         break;
         case 'update':
             $('#operationName').html('Update');
-            $('#question').html('Are you sure that you want to update ' + dataContext.name + '?');
+            $('#question').html('Are you sure that you want to update <strong>' + dataContext.name + '</strong>?');
             $('#modal').modal('show');
         break;
     }
