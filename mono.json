@@ -4,7 +4,7 @@
     "name": "dev_applications",
     "dependencies": [
         "/main.js",
-        "http://netdna.bootstrapcdn.com/bootstrap/3.0.0-rc2/js/bootstrap.min.js",
+        "http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js",
         "github/jillix/bind/v0.1.0",
         "github/jillix/events/v0.1.0",
         "http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"
