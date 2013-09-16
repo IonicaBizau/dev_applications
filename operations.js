@@ -18,12 +18,22 @@ exports.redeploy = function(link) {
 
 // Start app function
 exports.start = function(link) {
-
 };
 
 // Stop app function
 exports.stop = function(link) {
 
+    var appId = link.data;
+
+    M.app.stop(appId, function(err, wasStopped) {
+    
+        if (err) {
+            link.send(500, err.message);
+            return;
+        }
+
+        link.send(200, wasStopped);
+    });
 };
 
 // Edit app function

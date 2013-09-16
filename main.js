@@ -199,6 +199,20 @@ function handlers(dataContext) {
                     showSuccessMessage(message);
                 });
             break;
+            case 'stop':
+                    self.link('stop', { data: appId }, function(err, data) {
+                    var icon = '<i class="icon-stop"></i> ';
+
+                    $('#' + appId).find('.spinner').hide();
+                    $('#' + appId).find('.operations').show();
+
+                    if (err) return showError(icon + err + errorLabel);
+                    if (!data) return showWarning(icon + 'Application already stopped.' + warningLabel);
+
+                    var message = icon + '<strong>' + dataContext.name + '</strong> successfully <strong>stopped</strong>.' + successLabel;
+                    showSuccessMessage(message);
+                });
+            break;
         }
     });
 }
@@ -224,6 +238,11 @@ function confirmAction (operation, dataContext) {
         case 'update':
             $('#operationName').html('Update');
             $('#question').html('Are you sure that you want to update <strong>' + dataContext.name + '</strong>?');
+            $('#modal').modal('show');
+        break;
+        case 'stop':
+            $('#operationName').html('Stop');
+            $('#question').html('Are you sure that you want to stop <strong>' + dataContext.name + '</strong>?');
             $('#modal').modal('show');
         break;
     }
