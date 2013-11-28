@@ -1,6 +1,6 @@
 {
     "source": "github",
-    "owner": "danandrei",
+    "owner": "IonicaBizau",
     "name": "dev_applications",
     "dependencies": [
         "/main.js",
