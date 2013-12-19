@@ -1,4 +1,13 @@
 {
+  "name": "dev_application_actions",
+  "version": "0.2.1",
+  "description": "MonoDev Apllications Module",
+  "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/IonicaBizau/dev_application_actions.git"
+  },
+  "mono": {
     "source": "github",
     "owner": "IonicaBizau",
     "name": "dev_applications",
@@ -20,5 +29,15 @@
         { "file": "operations.js", "function": "delete" },
         { "file": "operations.js", "function": "applications" }
     ]
+  },
+  "keywords": [
+    "mono",
+    "monodev",
+    "modules"
+  ],
+  "author": "Ionică Bizău",
+  "bugs": {
+    "url": "https://github.com/IonicaBizau/dev_application_actions/issues"
+  },
+  "homepage": "https://github.com/IonicaBizau/dev_application_actions"
 }
-
