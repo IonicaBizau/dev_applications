@@ -1,0 +1,23 @@
+{
+    "source": "github",
+    "owner": "IonicaBizau",
+    "name": "dev_applications",
+    "dependencies": [
+        "/main.js",
+        "http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js",
+        "github/jillix/bind/v0.2.1",
+        "github/jillix/events/v0.1.8"
+    ],
+    "operations": [
+        { "file": "operations.js", "function": "redeploy" },
+        { "file": "operations.js", "function": "deploy" },
+        { "file": "operations.js", "function": "redeployMonoDev" },
+        { "file": "operations.js", "function": "start" },
+        { "file": "operations.js", "function": "stop" },
+        { "file": "operations.js", "function": "edit" },
+        { "file": "operations.js", "function": "update" },
+        { "file": "operations.js", "function": "delete" },
+        { "file": "operations.js", "function": "applications" }
+    ]
+}
+
