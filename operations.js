@@ -26,7 +26,7 @@ exports.stop = function(link) {
     var appId = link.data;
 
     M.app.stop(appId, function(err, wasStopped) {
-    
+
         if (err) {
             link.send(500, err.message);
             return;
@@ -87,7 +87,7 @@ exports.applications = function(link) {
 };
 
 exports.deploy = function (link) {
-   
+
     if (!link.data) { return link.send(400, "Missing data."); }
 
     M.app.fetch(link.data, function(err, descriptor) {
@@ -133,15 +133,15 @@ exports.redeployMonoDev = function(link) {
 // Sort alphabetically
 function sortAppsArray(array) {
     var names = [];
-    
+
     var sorted = [];
-    
+
     for (var i in array) {
         names.push(array[i].name);
     }
-    
+
     names.sort();
-    
+
     function getAppByName(name) {
         for (var i in array) {
             if (name === array[i].name) {
@@ -151,11 +151,11 @@ function sortAppsArray(array) {
             }
         }
     }
-    
+
     for (var i in names) {
         sorted.push(getAppByName(names[i]));
     }
-    
+
     return sorted;
 }
 
